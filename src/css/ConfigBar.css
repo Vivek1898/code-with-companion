@@ -1,0 +1,52 @@
+.ui {
+  font-family: "Roboto", sans-serif;
+}
+.ui.selection.dropdown {
+  color: rgb(251, 216, 127);
+  background-color:  #2e2e2e;
+}
+.ui.dropdown .menu > .item {
+  background:  #2e2e2e;
+  color: rgb(251, 216, 127);
+  border: none;
+  z-index: 13;
+  position: relative;
+}
+.ui.dropdown .menu > .item:hover {
+  color:  #2e2e2e;
+  z-index: 13;
+  background: rgb(251, 216, 127);
+}
+.ui.dropdown.selected,
+.ui.dropdown .menu .selected.item {
+  color: rgb(251, 216, 127);
+  z-index: 13;
+  background: rgb(3, 21, 68);
+}
+.dropdown {
+  margin: 10px;
+}
+
+.config-bar {
+  background-color: #202020;
+  padding: 0 5px 0 5px;
+}
+
+.run {
+  float: right;
+  margin-right: 10px;
+  margin-top: 12px;
+  width: 120px;
+  font-family: "Roboto", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700px;
+}
+.run:hover {
+  float: right;
+  margin-right: 10px;
+  width: 120px;
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  background-color:  #2e2e2e;
+  color: rgb(251, 216, 127);
+}

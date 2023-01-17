@@ -1,0 +1,10 @@
+div.scrollmenu {
+  height: 127px;
+  background-color: #2e2e2e;
+  overflow: auto;
+  white-space: nowrap;
+  padding: 3px;
+}
+div.scrollmenu video {
+  display: inline-block;
+}
