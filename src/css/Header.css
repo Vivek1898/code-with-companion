@@ -8,7 +8,7 @@
 
 .logo {
   text-decoration: none;
-  color: rgb(251, 216, 127);
+  color: whitesmoke;
   font-family: "Roboto", sans-serif;
   font-size: 2rem;
   font-weight: 500;
@@ -31,13 +31,13 @@
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
   background-color: rgb(3, 37, 78);
-  color: rgb(251, 216, 127);
+  color: whitesmoke;
 }
 
 button {
   justify-content: center;
   align-items: center;
-  background-color: rgb(251, 216, 127);
+  background-color: whitesmoke;
   height: 35px;
   border-radius: 5px;
   color: rgb(3, 37, 78);
@@ -49,7 +49,7 @@ button {
 
 .buttonOff {
   background-color: rgb(3, 37, 78);
-  color: rgb(251, 216, 127);
+  color: whitesmoke;
 }
 
 /* Float the link section to the right */

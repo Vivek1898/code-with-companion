@@ -9,10 +9,11 @@ import axios from "axios";
 import "../css/App.css";
 import { useEffect,useState } from "react";
 import { save } from 'save-file'
+import Board from "./Board";
 const myPeer = new Peer();
-
+// https://code-with-companion-backend.onrender.com
 // http://localhost:4000
-const socket = io("http://localhost:4000");
+const socket = io("https://code-with-companion-backend.onrender.com");
 const peers = {};
 
 const AppTest = ({roomId}) => {
@@ -32,9 +33,10 @@ const[state,setState]=useState({
       status: "RUN",
     });
     const[statusChanged,setStatusChanged]=useState("RUN");
-
+    const [drawingMode,setDrawingMode]=useState(null);
     const [inputOnModeChange,setInputOnModeChange]=useState("");
-
+     const [showBoard,setShowBoard]=useState(false);
+      const [showEditor,setShowEditor]=useState(true);
 useEffect(()=>{
   myPeer.on("open", (id) => {
     navigator.mediaDevices
@@ -67,6 +69,10 @@ useEffect(()=>{
         socket.on("receive code", (payload) => {
           updateCodeFromSockets(payload);
         });
+        socket.on("whiteBoardDataResponse", (data) => {
+          console.log(data)
+          setDrawingMode(data.imgURL);
+        });
         socket.on("receive input", (payload) => {
           updateInputFromSockets(payload);
         });
@@ -79,6 +85,10 @@ useEffect(()=>{
         socket.on("mode-change-receive", (payload) => {
           updateModeFromSockets(payload);
         });
+
+        socket.on("board-change-receive", (payload) => {
+          updateBoarddataFromSockets(payload);
+        });
       });
   });
   socket.on("user-disconnected", (userId) => {
@@ -88,17 +98,35 @@ useEffect(()=>{
 },[]);
 
 useEffect(()=>{
+const changeCodeOnMode =()=>{
   if(mode2==="cpp"){
-    setInputOnModeChange(`#include <iostream>
-    using namespace std;
-    int main() {
-      cout<<"Hello World!";
-      // your code goes here
-      return 0;
-    }`);
+    setInputOnModeChange(
+  `#include <iostream>
+using namespace std;
+int main() {
+  cout<<"Hello World!";
+  // your code goes here
+  return 0;
+}`);
     
     
+  }else if(mode2==="java"){
+setInputOnModeChange(`public class Main {
+  public static void main(String args[]) {
+      System.out.println("Hello World!");
   }
+}`)
+  }else if(mode2==="python" || mode2==="python3"){
+setInputOnModeChange(`print("Hello World!")`)
+  }else if(mode2==="c"){
+setInputOnModeChange(`#include <stdio.h>
+int main() {
+    printf("Hello World!");
+}
+`)
+  }
+}
+changeCodeOnMode();
 
 },[mode2]);
 
@@ -127,6 +155,8 @@ const handleSaveCode= async()=>{
           newInput: state.input,
           newOutput: state.output,
           newMode: state.mode,
+          newDrawing:drawingMode,
+          newBoard:showBoard
         });
       }
       const updateStateFromSockets =(payload) => {
@@ -135,6 +165,10 @@ const handleSaveCode= async()=>{
         setState({ input: payload.newInput });
         setState({ output: payload.newOutput });
         setState({ mode: payload.newMode });
+        setDrawingMode(payload.newDrawing);
+        setShowBoard(payload.newBoard)
+        setShowEditor(!payload.newBoard)
+
       }
       const updateCodeFromSockets=(payload) =>{
        // setState({ code: payload.newCode });
@@ -148,6 +182,12 @@ const handleSaveCode= async()=>{
       }
       const updateModeFromSockets=(payload) =>{
         setState({ mode: payload.mode });
+      }
+      const updateBoarddataFromSockets=(payload) =>{
+        console.log("payload")
+        console.log(payload.board)
+        setShowBoard(payload.board);
+        setShowEditor(!payload.board)
       }
       const connectToNewUser=(userId, stream)=> {
         const call = myPeer.call(userId, stream);
@@ -243,7 +283,7 @@ const handleSaveCode= async()=>{
         console.log(Code2);
         
         const params = {
-          source_code: Code2,
+          source_code: inputOnModeChange,
           language: mode2,
           input: state.input,
           api_key: "guest",
@@ -307,18 +347,39 @@ const handleSaveCode= async()=>{
         socket.emit("mode-change-send", { mode: mode });
       }
 
+      const handleChangeBoard=(e) =>{
+        console.log("changed");
+        console.log(e)
+        setShowBoard(e);
+        setShowEditor(!e)
+        socket.emit("board-change-send", { board: e });
+      }
+
+      const handleChangeDrawing=(e) =>{
+        console.log(e);
+      }
+
+
     return (
         <React.Fragment>
        
         <Header
           userId={userId2}
           // stream={state.stream}
+          showBoard={showBoard}
+          setShowBoard={setShowBoard}
+          showEditor={showEditor}
+          setshowEditor={setShowEditor}
           state={peerStream2}
           onVideoToggle={handleVideoToggle}
           onAudioToggle={handleAudioToggle}
+          onChangeBoard={handleChangeBoard}
         />
-        <VideoBar peersStream={peerStream2} userId={userId2} />
-        <Editor
+          <VideoBar peersStream={ peerStream2} userId={userId2} />
+
+
+
+{showEditor && (  <Editor
           mode={state.mode}
           code={inputOnModeChange}
           input={state.input}
@@ -330,7 +391,19 @@ const handleSaveCode= async()=>{
           handleRunClick={handleRunClick}
           onChangeMode={handleChangeMode}
           handleDownload={handleSaveCode}
-        />
+        />)}
+
+        {showBoard && (
+        <Board
+        user={userId2}
+        socket={socket}
+       // onChange={(e)=>console.log("GOT IT")}
+        
+        />)}
+
+
+        
+      
         {/* <Footer /> */}
       </React.Fragment>
     );

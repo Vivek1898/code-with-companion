@@ -2,12 +2,12 @@
   font-family: "Roboto", sans-serif;
 }
 .ui.selection.dropdown {
-  color: rgb(251, 216, 127);
+  color: whitesmoke;
   background-color:  #2e2e2e;
 }
 .ui.dropdown .menu > .item {
   background:  #2e2e2e;
-  color: rgb(251, 216, 127);
+  color: whitesmoke;
   border: none;
   z-index: 13;
   position: relative;
@@ -15,11 +15,11 @@
 .ui.dropdown .menu > .item:hover {
   color:  #2e2e2e;
   z-index: 13;
-  background: rgb(251, 216, 127);
+  background: whitesmoke;
 }
 .ui.dropdown.selected,
 .ui.dropdown .menu .selected.item {
-  color: rgb(251, 216, 127);
+  color: whitesmoke;
   z-index: 13;
   background: rgb(3, 21, 68);
 }
@@ -48,5 +48,5 @@
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
   background-color:  #2e2e2e;
-  color: rgb(251, 216, 127);
+  color: whitesmoke;
 }

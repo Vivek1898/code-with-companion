@@ -63,7 +63,7 @@ var theme;
 
 
 const Editor = (props) => {
-  const [theme2, setTheme] = useState("monokai");
+  const [theme2, setTheme] = useState("dracula");
   const [fontSize, setFontSize] = useState(16);
   const [modeForile, setModeForFile] = useState("cpp");
   let i = 0;

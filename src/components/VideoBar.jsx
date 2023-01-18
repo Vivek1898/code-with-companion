@@ -36,15 +36,18 @@ const VideoBar = ({peersStream,userId}) => {
   return (
     <div className="scrollmenu">
 
-      {peersStream.map((peer) => {
+      {userId!=undefined && peersStream.map((peer) => {
         return (
-          <Video
+
+          
+             <Video
             key={peer.userId}
             media={peer.stream}
             height={110}
             width={160}
             muted={userId === peer.userId ? true : false}
-          ></Video>
+          ></Video> 
+        
         );
       })}
     </div>

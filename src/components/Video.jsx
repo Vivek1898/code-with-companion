@@ -7,8 +7,25 @@ const Video = ({ media, width, height, muted, children }) => {
   React.useEffect(() => {
     videoRef.current.srcObject = media;
   }, [media]);
+
+  // check for media not null
+  // shouldComponentUpdate(props) {
+  //   return this.props.media !== props.media;
+  // }
+
+  // componentDidUpdate() {
+  //   this.video.srcObject = this.props.media;
+  // }
+
+  
+
+
+
+
+
+
   return (
-    <video
+      <video
       height={height}
       width={width}
       muted={muted}
@@ -20,6 +37,7 @@ const Video = ({ media, width, height, muted, children }) => {
     >
       {children}
     </video>
+   
   );
 };
 
