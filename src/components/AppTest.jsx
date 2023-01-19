@@ -22,6 +22,7 @@ const[peerStream2,setPeerStream2]=useState([]);
 const[userId2,setUserId2]=useState("");
 const[Code2,setCode2]=useState("");
 const [mode2,setMode2]=useState("cpp");
+const[streamChange,setStreamChange]=useState({});
 const[state,setState]=useState({
     userId: "",
       stream: {},
@@ -37,6 +38,19 @@ const[state,setState]=useState({
     const [inputOnModeChange,setInputOnModeChange]=useState("");
      const [showBoard,setShowBoard]=useState(false);
       const [showEditor,setShowEditor]=useState(true);
+      const [FixVideoPeers,setFixVideoPeers]=useState([]);
+
+      // useEffect(()=>{
+      //  const newData = peerStream2.forEach(el => {
+      //     console.log(el.userId)
+
+      //  })
+      // // console.log(newData)
+      //  console.log("Data fixed")
+      //  console.log(FixVideoPeers)
+      //  setFixVideoPeers(newData)
+
+      // },[streamChange,peerStream2,userId2])
 useEffect(()=>{
   myPeer.on("open", (id) => {
     navigator.mediaDevices
@@ -135,15 +149,20 @@ const handleSaveCode= async()=>{
   console.log(state.mode)
   //  await save(state.code,  `code.`+`${state.mode}` )}
   if(mode2==="cpp"){
-    await save(state.code,  "code.cpp" )}
+    let fileName = prompt("Enter File Name ", "code.cpp");
+    await save(state.code,  fileName )}
   else if(mode2==="java"){
-    await save(state.code,  "code.java" )}
+    let fileNameJ = prompt("Enter File Name ", "code.java");
+    await save(state.code,  fileNameJ )}
   else if(mode2==="python"){
-    await save(state.code,  "code.py" )}
+    let fileNameP = prompt("Enter File Name ", "code.py");
+    await save(state.code,  fileNameP )}
   else if(mode2==="javascript"){
-    await save(state.code,  "code.js" )}
+    let fileNameJS = prompt("Enter File Name ", "code.js");
+    await save(state.code,  fileNameJS)}
   else if(mode2==="c"){
-    await save(state.code,  "code.c" )}
+    let fileNameC = prompt("Enter File Name ", "code.c");
+    await save(state.code,  fileNameC )}
   else  
   await save(state.code,  "code.txt" )
 }
@@ -219,7 +238,8 @@ const handleSaveCode= async()=>{
         });
         if (!flag) peers.push({ userId: userId, stream: stream });
         peers2.forEach((peer) => {
-          if (peer.userId === userId) {
+          console.log(peer.userId)
+          if (peer.userId === userId ) {
             peer.stream = stream;
             flag = true;
           }
@@ -232,6 +252,7 @@ const handleSaveCode= async()=>{
      const  addUserIdAndStream=(userId2, stream2) =>{
       console.log(userId2, stream2);
       setUserId2(userId2);
+      setStreamChange(stream2);
         setState({ userId: userId2, stream: stream2 });
       }
     
@@ -370,7 +391,7 @@ const handleSaveCode= async()=>{
           setShowBoard={setShowBoard}
           showEditor={showEditor}
           setshowEditor={setShowEditor}
-          state={peerStream2}
+          stream={streamChange}
           onVideoToggle={handleVideoToggle}
           onAudioToggle={handleAudioToggle}
           onChangeBoard={handleChangeBoard}

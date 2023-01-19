@@ -52,7 +52,8 @@ const Header = ({ onVideoToggle, onAudioToggle, userId ,showBoard,setShowBoard,s
             toggleVideoCss();
           }}
         >
-          <i className={video ? "fa fa-video-camera" : "fa fa-video-slash"}></i>
+          {/* //fa fa-video-camera */}
+          <i className={video ? "fa fa-video-slash" : "fa fa-video-camera"}></i>
         </button>
         <button
           className={audio ? "buttonOn" : "buttonOff"}
@@ -62,7 +63,7 @@ const Header = ({ onVideoToggle, onAudioToggle, userId ,showBoard,setShowBoard,s
           }}
         >
           <i
-            className={audio ? "fa fa-microphone" : "fa fa-microphone-slash"}
+            className={audio ? "fa fa-microphone-slash" : "fa fa-microphone"}
           ></i>
         </button>
       </div>

@@ -24,7 +24,7 @@
 // export default VideoBar;
 
 
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import Video from "./Video";
 import "../css/VideoBar.css";
 
@@ -33,10 +33,17 @@ const VideoBar = ({peersStream,userId}) => {
   console.log(peersStream)
   console.log("2")
   console.log(userId)
+  const temp=[]
+  const newData=[]
+//   useEffect(() => {
+//     console.log("From VideoBar")
+// newData = peersStream.map(el => el.filter(({ date }) => date !== null));
+//   }, [])
+ 
   return (
     <div className="scrollmenu">
 
-      {userId!=undefined && peersStream.map((peer) => {
+      { peersStream.map((peer) => {
         return (
 
           
