@@ -28,7 +28,7 @@ import React, { Component, useEffect } from "react";
 import Video from "./Video";
 import "../css/VideoBar.css";
 
-const VideoBar = ({peersStream,userId}) => {
+const VideoBar = ({peersStream,userId,username}) => {
   console.log("From VideoBar")
   console.log(peersStream)
   console.log("2")
@@ -45,15 +45,20 @@ const VideoBar = ({peersStream,userId}) => {
 
       { peersStream.map((peer) => {
         return (
-
-          
-             <Video
+            <>
+            <Video
             key={peer.userId}
             media={peer.stream}
             height={110}
             width={160}
+            username={peer.user}
             muted={userId === peer.userId ? true : false}
-          ></Video> 
+          ></Video>
+
+           
+            </>
+          
+              
         
         );
       })}

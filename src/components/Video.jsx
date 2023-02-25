@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import "../css/Video.css";
 
-const Video = ({ media, width, height, muted, children }) => {
+const Video = ({ media, width, height, muted, children,username }) => {
   let videoRef = React.createRef();
   React.useEffect(() => {
     videoRef.current.srcObject = media;
@@ -25,7 +25,8 @@ const Video = ({ media, width, height, muted, children }) => {
 
 
   return (
-      <video
+    <>
+     <video
       height={height}
       width={width}
       muted={muted}
@@ -36,7 +37,12 @@ const Video = ({ media, width, height, muted, children }) => {
       // }}
     >
       {children}
+     
     </video>
+    {username}
+    
+    </>
+     
    
   );
 };

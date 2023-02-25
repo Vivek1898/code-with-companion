@@ -1,0 +1,13 @@
+.problemsList{
+    border: none;
+    background-color: #3c4979;
+    font-size: 18px;
+    color: white;
+
+}
+
+.list{
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}

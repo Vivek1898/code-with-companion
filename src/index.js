@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import AppTest from "./components/AppTest";
+import Problems from "./components/Problems/Problems";
+
 import {
   HashRouter as Router,
   Route,
@@ -13,7 +15,7 @@ ReactDOM.render(
     <Route exact path="/">
       <Redirect to={"/" + uuidV4()} />
     </Route>
-
+    {/* <Route exact path="/" children={<Problems />} /> */}
     <Route path="/:roomId" children={<Room />} />
   </Router>,
   document.getElementById("root")
@@ -21,5 +23,8 @@ ReactDOM.render(
 
 function Room() {
   let { roomId } = useParams();
-  return <AppTest roomId={roomId} />;
+  let username = "vivek"
+//  let username = prompt("Please enter your name");
+  // alert(person)
+  return <AppTest roomId={roomId} username = {username}/>;
 }

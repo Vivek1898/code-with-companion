@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Header from "./Header";
 import VideoBar from "./VideoBar";
 import Editor from "./Editor";
+import ProblemsPage from "./Problems/Problems";
 import Footer from "./Footer";
 import io from "socket.io-client";
 import Peer from "peerjs";
@@ -10,16 +11,58 @@ import "../css/App.css";
 import { useEffect,useState } from "react";
 import { save } from 'save-file'
 import Board from "./Board";
+import useMediaRecorder from '@wmik/use-media-recorder';
+import Player from "./Player";
 const myPeer = new Peer();
 // https://code-with-companion-backend.onrender.com
 // http://localhost:4000
 const socket = io("https://code-with-companion-backend.onrender.com");
 const peers = {};
 
-const AppTest = ({roomId}) => {
+
+const AppTest = ({roomId ,username}) => {
+  let {
+    error,
+    status,
+    mediaBlob,
+    stopRecording,
+    getMediaStream,
+    startRecording
+  } = useMediaRecorder({
+    recordScreen: true,
+    blobOptions: { type: 'video/webm' },
+    mediaStreamConstraints: { audio: true, video: true }
+  });
+
+  const handleSaveVideo = () => {
+    const url = URL.createObjectURL(mediaBlob);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style = 'display: none';
+    a.href = url;
+    a.download = 'recorded-video.webm';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+
+
+  const [resumeData, setResumeData] = useState({});
+
+  useEffect(() => {
+    fetch("/problems.json")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+        
+        setResumeData(data);
+        console.log(resumeData);
+      });
+  }, []);
 //alert(roomId)
 const[peerStream2,setPeerStream2]=useState([]);
 const[userId2,setUserId2]=useState("");
+const[username2,setusername2]=useState(username)
 const[Code2,setCode2]=useState("");
 const [mode2,setMode2]=useState("cpp");
 const[streamChange,setStreamChange]=useState({});
@@ -33,13 +76,15 @@ const[state,setState]=useState({
       output: "",
       status: "RUN",
     });
+    
     const[statusChanged,setStatusChanged]=useState("RUN");
     const [drawingMode,setDrawingMode]=useState(null);
     const [inputOnModeChange,setInputOnModeChange]=useState("");
      const [showBoard,setShowBoard]=useState(false);
+     const [showProblems,setShowProblems]=useState(false);
       const [showEditor,setShowEditor]=useState(true);
       const [FixVideoPeers,setFixVideoPeers]=useState([]);
-
+      const [showProblemsPage,setShowProblemsPage]=useState(false);
       // useEffect(()=>{
       //  const newData = peerStream2.forEach(el => {
       //     console.log(el.userId)
@@ -59,16 +104,19 @@ useEffect(()=>{
         audio: true,
       })
       .then((stream) => {
+       setusername2(username)
         addUserIdAndStream(id, stream);
         addVideoStream(id, stream, false);
         socket.on("user-connected", (userId) => {
           connectToNewUser(userId, stream);
+          console.log("USER")
+          console.log(username)
           sendDatatoNewUser();
         });
         myPeer.on("call", (call) => {
           call.answer(stream);
           call.on("stream", (userVideoStream) => {
-            addVideoStream(call.peer, userVideoStream, false);
+            addVideoStream(call.peer, userVideoStream, false,username2);
           });
           call.on("close", () => {
             const peers = state.peers;
@@ -79,7 +127,7 @@ useEffect(()=>{
           });
           peers[call.peer] = call;
         });
-        socket.emit("join-room", roomId, id);
+        socket.emit("join-room", roomId, id,username2);
         socket.on("receive code", (payload) => {
           updateCodeFromSockets(payload);
         });
@@ -163,8 +211,8 @@ const handleSaveCode= async()=>{
   else if(mode2==="c"){
     let fileNameC = prompt("Enter File Name ", "code.c");
     await save(state.code,  fileNameC )}
-  else  
-  await save(state.code,  "code.txt" )
+  // else  
+  // await save(state.code,  "code.txt" )
 }
 
    const sendDatatoNewUser = () => {
@@ -175,7 +223,9 @@ const handleSaveCode= async()=>{
           newOutput: state.output,
           newMode: state.mode,
           newDrawing:drawingMode,
-          newBoard:showBoard
+          newBoard:showBoard,
+          newUserName:username2
+
         });
       }
       const updateStateFromSockets =(payload) => {
@@ -187,6 +237,7 @@ const handleSaveCode= async()=>{
         setDrawingMode(payload.newDrawing);
         setShowBoard(payload.newBoard)
         setShowEditor(!payload.newBoard)
+        setusername2(payload.newUserName)
 
       }
       const updateCodeFromSockets=(payload) =>{
@@ -223,7 +274,7 @@ const handleSaveCode= async()=>{
         peers[userId] = call;
       }
     
-     const  addVideoStream=(userId, stream, flag) =>{
+     const  addVideoStream=(userId, stream, flag,username2) =>{
         if (userId === state.userId) {
           stream.getVideoTracks()[0].enabled = false;
           stream.getAudioTracks()[0].enabled = false;
@@ -236,7 +287,7 @@ const handleSaveCode= async()=>{
             flag = true;
           }
         });
-        if (!flag) peers.push({ userId: userId, stream: stream });
+        if (!flag) peers.push({ userId: userId, stream: stream ,user:username2});
         peers2.forEach((peer) => {
           console.log(peer.userId)
           if (peer.userId === userId ) {
@@ -244,15 +295,16 @@ const handleSaveCode= async()=>{
             flag = true;
           }
         });
-        if (!flag) peers2.push({ userId: userId, stream: stream });
+        if (!flag) peers2.push({ userId: userId, stream: stream , user:username2 });
         setState({ peers: peers });
         setPeerStream2(peers2);
       }
     
-     const  addUserIdAndStream=(userId2, stream2) =>{
+     const  addUserIdAndStream=(userId2, stream2,username22) =>{
       console.log(userId2, stream2);
       setUserId2(userId2);
       setStreamChange(stream2);
+      setusername2(username22)
         setState({ userId: userId2, stream: stream2 });
       }
     
@@ -373,34 +425,84 @@ const handleSaveCode= async()=>{
         console.log(e)
         setShowBoard(e);
         setShowEditor(!e)
+        setShowProblems(!e)
         socket.emit("board-change-send", { board: e });
+      }
+      const handleChangeProblems = (e) =>{
+        //setShowBoard(false);
+       // setShowEditor(false);
+        setShowProblemsPage(true);
+
       }
 
       const handleChangeDrawing=(e) =>{
         console.log(e);
       }
-
+      const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
 
     return (
         <React.Fragment>
+            <article>
+      <h1>Record Session</h1>
+      {error ? `${status} ${error.message}` : status}
+      <section>
+        <button
+          type="button"
+          onClick={getMediaStream}
+          disabled={status === 'ready'}
+        >
+          Share screen
+        </button>
+        <button
+          type="button"
+          onClick={startRecording}
+          disabled={status === 'recording'}
+        >
+          Start recording
+        </button>
+        <button
+          type="button"
+          onClick={stopRecording}
+          disabled={status !== 'recording'}
+        >
+          Stop recording
+        </button>
+        <button
+          type="button"
+          onClick={handleSaveVideo}
+          disabled={!mediaBlob}
+        >
+          Save video
+        </button>
+      </section>
+      <Player srcBlob={mediaBlob} />
+    </article>
        
         <Header
           userId={userId2}
+          username={username}
           // stream={state.stream}
           showBoard={showBoard}
           setShowBoard={setShowBoard}
           showEditor={showEditor}
+          showProblems={showProblems}
           setshowEditor={setShowEditor}
+          setShowProblems={setShowProblems}
+          setShowProblemsPage={setShowProblemsPage}
           stream={streamChange}
           onVideoToggle={handleVideoToggle}
           onAudioToggle={handleAudioToggle}
           onChangeBoard={handleChangeBoard}
+          onProblemPageChange = {handleChangeProblems}
+          setIsSideDrawerOpen={setIsSideDrawerOpen}
+          isSideDrawerOpen={isSideDrawerOpen}
         />
-          <VideoBar peersStream={ peerStream2} userId={userId2} />
+          <VideoBar peersStream={ peerStream2} userId={userId2} username={username2} />
 
+          <ProblemsPage isOpen={isSideDrawerOpen} setIsSideDrawerOpen={setIsSideDrawerOpen} />   
 
-
-{showEditor && (  <Editor
+{showEditor && ( 
+  <Editor
           mode={state.mode}
           code={inputOnModeChange}
           input={state.input}
@@ -412,7 +514,13 @@ const handleSaveCode= async()=>{
           handleRunClick={handleRunClick}
           onChangeMode={handleChangeMode}
           handleDownload={handleSaveCode}
-        />)}
+        />
+      
+
+        
+        )}
+
+       
 
         {showBoard && (
         <Board
@@ -421,6 +529,9 @@ const handleSaveCode= async()=>{
        // onChange={(e)=>console.log("GOT IT")}
         
         />)}
+      
+{/* 
+{showProblemsPage && (<ProblemsPage />)} */}
 
 
         
