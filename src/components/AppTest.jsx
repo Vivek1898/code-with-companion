@@ -475,7 +475,7 @@ const handleSaveCode= async()=>{
           Save video
         </button>
       </section>
-      <Player srcBlob={mediaBlob} />
+      <Player srcBlob={mediaBlob} handleSaveVideo={handleSaveVideo}/>
     </article>
        
         <Header
